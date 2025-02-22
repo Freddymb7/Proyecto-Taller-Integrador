@@ -1,2 +1,17 @@
-# Proyecto-Taller-Integrador
-El presente repositorio es para documentar el avance del proyecto del curso taller integrador el cual consta en realizar una implementación de un sistema traductor de lenguajes de programación de alto nivel (C/C++) a código de bajo nivel compatible con microarquitectura RISC-V.
+Instalación
+
+gitclone del repositorio:
+
+bashCopygit clone [URL de tu repositorio]
+
+Navegar al directorio del proyecto:
+
+bashCopycd [nombre-del-proyecto]
+
+dependencias:
+
+bashCopynpm install
+
+Uso
+Para iniciar el servidor de desarrollo:
+bashCopynpm run dev
