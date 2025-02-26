@@ -58,15 +58,26 @@ return (
             </div>
         
             
-
+            {/*Text area or code editor area*/}
             <div className="p-4">
-
-              {/* Code editor ( por mejorar) */}
-              <div className="h-96 bg-slate-50 border border-slate-200 rounded-lg">
-                <p className="p-4 text-slate-500">Type your code here</p>
-              </div>
+              <textarea 
+                value={code}
+                onChange={CodeChange}
+                className= "w-full h-96 p-4 font-mono text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" 
+              />
+            </div>
+              {/* Compile button characteristics*/}
+            <div className="border-t border-slate-200 bg-slate-50 p-4">
+              <button 
+                onClick={Compilation}
+                disabled={isCompiling}
+                className={`bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ${isCompiling ? 'opacity-70 cursor-not-allowed' : ''}`}
+              >
+                {isCompiling ? 'Compiling...' : 'Compile'}
+              </button>
             </div>
           </div>
+
           
           {/* Output Panel */}
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
