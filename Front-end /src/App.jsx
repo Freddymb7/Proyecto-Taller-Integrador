@@ -1,50 +1,45 @@
-import { useState } from 'react'
+import React from 'react'
 
-function App() {
-  const [code, setCode] = useState('')
-  const [language, setLanguage] = useState('cpp')
-  const [input, setInput] = useState('')
-  
+function CompilerUI() {
   return (
-    <div className="min-h-screen bg-slate-100 p-6">
-      <div className="max-w-4xl mx-auto">
-        <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-          {/* Header */}
-          <div className="border-b border-slate-200 p-4 bg-white">
-            <div className="flex items-center justify-between">
-              <h1 className="text-2xl font-bold text-slate-800">C/C++ Code Editor</h1>
-              <select 
-                value={language}
-                onChange={(e) => setLanguage(e.target.value)}
-                className="px-3 py-1.5 bg-white border border-slate-300 rounded-md shadow-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              >
-                <option value="c">C</option>
-                <option value="cpp">C++</option>
-              </select>
+    // Background, heading and container width 
+    <div className="min-h-screen bg-blue-100 p-6">
+      <div className="max-w-7xl mx-auto">
+        <h1 className="text-3xl font-bold text-slate-800 mb-6">
+          C/C++ to RISC-V 
+        </h1>
+
+        {/* grid layout small and large screen */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6"> 
+
+          {/* Code panel */}
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="border-b border-slate-200 p-4 bg-white">
+              <h2 className="text-xl font-semibold text-slate-800">Source Code</h2>
+            </div>
+
+            <div className="p-4">
+
+              {/* Code editor ( por mejorar) */}
+              <div className="h-96 bg-slate-50 border border-slate-200 rounded-lg">
+                <p className="p-4 text-slate-500">Type your code here</p>
+              </div>
             </div>
           </div>
           
-          {/* Editor */}
-          <div className="p-4">
-            <textarea
-              value={code}
-              onChange={(e) => setCode(e.target.value)}
-              className="w-full h-96 p-4 font-mono text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
-
-            />
-          </div>
-          
-          {/* Input & Run Section */}
-          <div className="border-t border-slate-200 bg-slate-50 p-4">
-            <div className="mb-4">
-
-
+          {/* Output Panel */}
+          <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+            <div className="border-b border-slate-200 p-4 bg-white">
+              <h2 className="text-xl font-semibold text-slate-800">Assembly Code</h2>
             </div>
-            <button
-              className="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg font-medium shadow-sm transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            >
-              Compile & Run
-            </button>
+            
+            <div className="p-4">
+
+              {/* output (por mejorar) */}
+              <div className="h-96 bg-slate-800 text-slate-100 rounded-lg p-4 font-mono text-sm">
+                <p>output</p>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -52,4 +47,4 @@ function App() {
   )
 }
 
-export default App
+export default CompilerUI
