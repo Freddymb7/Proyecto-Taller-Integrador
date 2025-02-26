@@ -1,7 +1,35 @@
-import React from 'react'
+import React, { useState } from 'react'
 
 function CompilerUI() {
-  return (
+  // Variables 
+  const [code,setCode] = useState ('// Type your code here') //stores codes 
+  const [language,setLanguage] = useState ('c') //language in use 
+  const [assembly,setAssembly] = useState ('') // stores assembly code 
+  const [isCompiling,setIsCompiling] = useState (false) // flag state 
+  const [error,setError] = useState('') // stores errors 
+
+  // Interactive consts
+  const LanguageChange = (e) => { setLanguage(e.target.value) }
+  const CodeChange = (e) => { setCode(e.target.value) }
+
+
+  // Compilation process
+  const Compilation = () => { setIsCompiling(true) 
+  setError('') // cleans errors 
+
+  // timout of 1 sec. if code source empty, then error there is no code, else show results 
+  setTimeout(() => {
+    if (code.trim() === '') {
+      setError('Please enter some code to compile')
+      setAssembly('')
+    } else {   
+      setAssembly(`// Simulated RISC-V assembly output for ${language} code\n// This is just a placeholder`)
+    }
+    setIsCompiling(false) // compilation compelte back to false 
+  }, 1000)
+}
+
+return (
     // Background, heading and container width 
     <div className="min-h-screen bg-blue-100 p-6">
       <div className="max-w-7xl mx-auto">
@@ -15,8 +43,21 @@ function CompilerUI() {
           {/* Code panel */}
           <div className="bg-white rounded-xl shadow-lg overflow-hidden">
             <div className="border-b border-slate-200 p-4 bg-white">
-              <h2 className="text-xl font-semibold text-slate-800">Source Code</h2>
+              <div className="flex items-center justify-between">
+                <h2 className="text-xl font-semibold text-slate-800">Source Code</h2>
+                {/* drop down menu */}
+                <select 
+                  value={language}
+                  onChange={LanguageChange}
+                  className="px-3 py-1.5 bg-white border border-slate-300 rounded-md shadow-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="c">C</option>
+                  <option value="cpp">C++</option>
+                </select>
+              </div>
             </div>
+        
+            
 
             <div className="p-4">
 
@@ -48,3 +89,4 @@ function CompilerUI() {
 }
 
 export default CompilerUI
+
