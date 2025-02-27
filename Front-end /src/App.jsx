@@ -1,16 +1,45 @@
 import React, { useState } from 'react'
+import CodeMirror from '@uiw/react-codemirror'
+import { cpp } from '@codemirror/lang-cpp'
+import { vscodeDark } from '@uiw/codemirror-theme-vscode'
+
+//Default code starter 
+const DEFAULT_CPP_CODE = `#include <iostream>
+int main() {
+    std::cout << "Hello World!" << std::endl;
+    return 0;
+}`;
+
+//Default code starter
+const DEFAULT_C_CODE = `#include <stdio.h>
+int main() {
+    printf("Hello World!\\n");
+    return 0;
+}`;
 
 function CompilerUI() {
+
   // Variables 
-  const [code,setCode] = useState ('// Type your code here') //stores codes 
+  const [code,setCode] = useState (DEFAULT_C_CODE) //stores codes 
   const [language,setLanguage] = useState ('c') //language in use 
   const [assembly,setAssembly] = useState ('') // stores assembly code 
   const [isCompiling,setIsCompiling] = useState (false) // flag state 
   const [error,setError] = useState('') // stores errors 
 
   // Interactive consts
-  const LanguageChange = (e) => { setLanguage(e.target.value) }
-  const CodeChange = (e) => { setCode(e.target.value) }
+
+  // Handles the language change and default code starter 
+  const LanguageChange = (e) => { 
+    const newLanguage = e.target.value 
+    setLanguage (newLanguage) 
+    if (newLanguage === 'c' ) {
+      setCode(DEFAULT_C_CODE)
+    } else if (newLanguage === 'cpp' ){
+      setCode(DEFAULT_CPP_CODE)
+    }
+  }
+  const CodeChange = (value) => { setCode(value) }
+
 
 
   // Compilation process
@@ -60,10 +89,14 @@ return (
             
             {/*Text area or code editor area*/}
             <div className="p-4">
-              <textarea 
+              {/*CodeMirror Container for code edition*/}
+              <CodeMirror
                 value={code}
+                height="400px"
+                theme={vscodeDark}
+                extensions={[cpp()]}
                 onChange={CodeChange}
-                className= "w-full h-96 p-4 font-mono text-sm bg-slate-50 border border-slate-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none" 
+                className="border border-slate-200 rounded-lg overflow-hidden"
               />
             </div>
               {/* Compile button characteristics*/}
