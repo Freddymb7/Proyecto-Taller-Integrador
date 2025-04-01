@@ -13,11 +13,20 @@ cd [Front-end]
 ```
 
 3. Dependencias:
+
+Ejecutar desde la carpeta de front-end
 ```bash
+npm install json-server express axios react-router-dom react react-dom
 npm install
 ```
 
-4. Servidor de desarrollo:
+4. Servidor de Fakeapi
 ```bash
+npm run fakeapi
+```
+
+5. Servidor de desarrollo:
+```bash
+Ejecutar desde una nueva terminal en la misma carpeta del proyecto 
 npm run dev
 ```
