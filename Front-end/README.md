@@ -26,7 +26,8 @@ npm run fakeapi
 ```
 
 5. Servidor de desarrollo:
-```bash
+   
 Ejecutar desde una nueva terminal en la misma carpeta del proyecto 
+```bash
 npm run dev
 ```
