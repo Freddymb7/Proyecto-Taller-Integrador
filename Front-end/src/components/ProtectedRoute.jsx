@@ -1,7 +1,7 @@
 // Importa el componente Navigate de react-router-dom para hacer redirecciones
 import { Navigate } from 'react-router-dom';
 
-// Componente funcional que recibe como "hijo" lo que debe renderizar si el usuario está logueado
+// Componente funcional que muestra su contenido solo si el usuario ha iniciado sesión
 const ProtectedRoute = ({ children }) => {
   // Revisa si el usuario está logueado leyendo el valor guardado en localStorage
   const isLogged = localStorage.getItem('isLogged') === 'true';
