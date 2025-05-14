@@ -9,4 +9,5 @@ __pycache__/
 *.zip
 outputs/
 uploads/
+registros.txt/
 
