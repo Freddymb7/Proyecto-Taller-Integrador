@@ -1,15 +1,17 @@
 from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
+from werkzeug.security import generate_password_hash, check_password_hash
 import subprocess
 import os
 import uuid
 import json
 
 app = Flask(__name__, static_folder="../frontend/dist", static_url_path="")
-CORS(app)  # Permitir acceso desde React
+CORS(app)
 
 UPLOAD_FOLDER = "uploads"
 OUTPUT_FOLDER = "outputs"
+DB_FILE = "db.json"
 
 # Crear carpetas si no existen
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
@@ -17,7 +19,6 @@ os.makedirs(OUTPUT_FOLDER, exist_ok=True)
 
 @app.route("/")
 def index():
-    """Sirve la aplicación de React"""
     return send_from_directory(app.static_folder, "index.html")
 
 @app.route('/api/login', methods=['POST'])
@@ -26,25 +27,50 @@ def login():
     email = data.get('email')
     password = data.get('password')
 
-    # Ruta segura al archivo
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    db_path = os.path.join(base_dir, 'db.json')
+    db_path = os.path.join(base_dir, DB_FILE)
 
     try:
         with open(db_path, 'r') as f:
-            users = json.load(f)['users']
-    except Exception as e:
+            users = json.load(f).get('users', [])
+    except Exception:
         return jsonify({"success": False, "error": "No se pudo leer db.json"}), 500
 
     for user in users:
-        if user['email'] == email and user['password'] == password:
-            return jsonify({"success": True, "user": user})
+        if user['email'] == email and check_password_hash(user['password'], password):
+            return jsonify({"success": True, "user": {"email": user["email"]}})
 
     return jsonify({"success": False, "error": "Credenciales incorrectas"}), 401
 
+@app.route('/api/register', methods=['POST'])
+def register():
+    data = request.get_json()
+    email = data.get('email')
+    password = data.get('password')
+
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    db_path = os.path.join(base_dir, DB_FILE)
+
+    try:
+        with open(db_path, 'r') as f:
+            db = json.load(f)
+    except FileNotFoundError:
+        db = {"users": []}
+
+    # Verificar si ya existe
+    if any(u['email'] == email for u in db['users']):
+        return jsonify({"success": False, "error": "Usuario ya existe"}), 409
+
+    hashed_password = generate_password_hash(password)
+    db['users'].append({"email": email, "password": hashed_password})
+
+    with open(db_path, 'w') as f:
+        json.dump(db, f, indent=4)
+
+    return jsonify({"success": True, "message": "Usuario registrado correctamente"})
+
 @app.route("/compilar", methods=["POST"])
 def compilar():
-    """Recibe código C, lo compila y lo ejecuta en RISC-V"""
     try:
         codigo = request.json.get("codigo", "")
         if not codigo:
@@ -55,43 +81,37 @@ def compilar():
         elf_filename = os.path.join(OUTPUT_FOLDER, f"{file_id}.elf")
         asm_filename = os.path.join(OUTPUT_FOLDER, f"{file_id}.s")
 
-        # Guardar el código en un archivo
         with open(c_filename, "w") as f:
             f.write(codigo)
 
-        # Compilar a ensamblador
         subprocess.run(
             ["riscv32-unknown-elf-gcc", "-march=rv32i", "-mabi=ilp32", "-S", c_filename, "-o", asm_filename], 
             check=True
         )
 
-        # Compilar a ejecutable
         subprocess.run(
             ["riscv32-unknown-elf-gcc", "-march=rv32i", "-mabi=ilp32", "-o", elf_filename, c_filename], 
             check=True
         )
 
-        # Ejecutar en QEMU y capturar registros
         run_result = subprocess.run(
             ["qemu-riscv32", "-d", "in_asm", elf_filename], 
             capture_output=True, text=True
         )
 
-        # Leer el ensamblador generado
         with open(asm_filename, "r") as asm_file:
             assembler_code = asm_file.read()
 
-        # Extraer registros en hexadecimal de stderr (si se usa `-d in_asm`)
         registros_hex = ""
         for line in run_result.stderr.split("\n"):
-            if "x" in line:  # Si la línea contiene valores de registros
+            if "x" in line:
                 registros_hex += line + "\n"
 
         return jsonify({
             "mensaje": "Compilación y ejecución exitosa",
             "salida": run_result.stdout,
             "ensamblador": assembler_code,
-            "registros_hex": registros_hex  # Agregado para optimizar memoria en FPGA
+            "registros_hex": registros_hex
         })
 
     except subprocess.CalledProcessError as e:
