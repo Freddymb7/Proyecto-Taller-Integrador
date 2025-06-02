@@ -2,18 +2,15 @@
 import React from 'react';
 import ErrorDisplay from './ErrorDisplay';
 
-
 // Common UI classes for the assembly output box 
 const PANEL_CLASS = "bg-white rounded-xl shadow-lg overflow-hidden";
 const PANEL_HEADER_CLASS = "border-b border-slate-200 p-4 bg-white";
 const PANEL_TITLE_CLASS = "text-xl font-semibold text-slate-800";
 
-// Funcition that gets 4 props form App.jsx 
+// Function that gets 4 props from App.jsx 
 function AssemblyOutput({ assembly, errors, warnings, isCompiling }) {
-  // render function to display what's goign on with the current state 
   const renderContent = () => {
     if (isCompiling) {
-      // animated spinner for when it's compiling 
       return (
         <div className="flex items-center justify-center h-full space-x-2">
           <svg className="animate-spin h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -24,22 +21,30 @@ function AssemblyOutput({ assembly, errors, warnings, isCompiling }) {
         </div>
       );
     }
-    // checks if there are errors to display if there are calls the ErrorDisplay function 
+
     if (errors.length > 0 || warnings.length > 0) {
       return <ErrorDisplay errors={errors} warnings={warnings} />;
     }
-    // checks if there is assembly code to display inside a preformatted text 
+
     if (assembly) {
       return <pre className="p-4">{assembly}</pre>;
     }
-    // if there is no aseembly code the show the message 
+
     return (
       <div className="flex items-center justify-center h-full text-slate-400">
         <p>Compile your code to see RISC-V assembly output</p>
       </div>
     );
   };
-// renders the assembly code box and the code area is set to be dark and to display whetever needs to be display 
+
+  // Maneja la descarga del archivo de ejemplo
+  const handleDownload = () => {
+    const link = document.createElement("a");
+    link.href = "/ejemplo_riscv.s"; // Asegúrate de tener este archivo en /public
+    link.download = "codigo_riscv.s";
+    link.click();
+  };
+
   return (
     <div className={PANEL_CLASS}>
       <div className={PANEL_HEADER_CLASS}>
@@ -49,6 +54,16 @@ function AssemblyOutput({ assembly, errors, warnings, isCompiling }) {
       <div className="p-0">
         <div className="bg-slate-900 text-slate-100 font-mono text-sm overflow-auto" style={{ height: "500px" }}>
           {renderContent()}
+        </div>
+
+        {/* Botón de descarga debajo del panel */}
+        <div className="p-4 border-t border-slate-200 bg-white text-center">
+          <button
+            onClick={handleDownload}
+            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded"
+          >
+            Descargar código RISC-V
+          </button>
         </div>
       </div>
     </div>
