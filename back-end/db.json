@@ -1,10 +1,12 @@
 {
     "users": [
-      {
-        "id": 1,
-        "email": "hola@gmail.com",
-        "password": "hola123"
-        
-      }
+        {
+            "email": "hola@gmail.com",
+            "password": "scrypt:32768:8:1$2MAKyAdzY9VujpzH$b162c76f0a1268ee841c9da36c1afb75158c1e26b5faf2c70929d5fb5cab99e5de9bb946492ee4c681125955869e4a4faaa61818ff2f1343c0e01b165689e35b"
+        },
+        {
+            "email": "test@gmail.com",
+            "password": "scrypt:32768:8:1$0L45XURvy5RaYahN$e17514831e70de7f8f71453acd7bc0c4e3ba7b23d74709a4f62e93222fd9ebecc77168fa316ed6b761410f74820d606c421ade685349f4cb530299c9182dda91"
+        }
     ]
-  }
+}

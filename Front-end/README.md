@@ -6,16 +6,34 @@
 
 ### 1. gitclone del repositorio:
 ```bash
-git clone --branch Implementacion-de-usuarios https://github.com/Freddymb7/Proyecto-Taller-Integrador.git
+git clone https://github.com/Freddymb7/Proyecto-Taller-Integrador.git
+
 ```
 
-### 2. Navegar al Proyecto:
+### 2. Navegar al backend para activar el servidor del Proyecto:
 ```bash
 cd [nombre-del-repo]
-cd [Front-end]
+cd [Back-end]
 ```
 
-### 3. Dependencias:
+### 3. Correr el servidor de flask:
+Primero se recomienda activar un entorno virtual 
+
+```bash
+source venv/bin/activate
+```
+
+Ahora se instalan lo requerimientos: 
+```bash
+pip install -r requirements.txt
+```
+
+Por último se ejecuta al archivo donde se encuentra el servidor. 
+
+```bash
+python app.py
+```
+### 4. Dependencias del front-end:
 
 Ejecutar desde la carpeta de front-end
 ```bash
@@ -23,14 +41,9 @@ npm install json-server express axios react-router-dom react react-dom
 npm install
 ```
 
-### 4. Servidor de Fakeapi
-```bash
-npm run fakeapi
-```
-
 ### 5. Servidor de desarrollo:
    
-Ejecutar desde una nueva terminal en la misma carpeta del proyecto 
+Ejecutar el siguiente comando en la misma carpeta del proyecto 
 ```bash
 npm run dev
 ```
