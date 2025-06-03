@@ -1,8 +1,10 @@
 // Importa la librería axios, que permite hacer peticiones HTTP fácilmente
 import axios from 'axios';
 
-// Cambiar 
-const API_URL = "https://tu-ngrok-id.ngrok.io/api";
+
+//const API_URL = "https://tu-ngrok-id.ngrok.io/api";
+
+const API_URL = "http://127.0.0.1:5000/api";
 
 // Función para iniciar sesión
 export const loginUser = async (email, password) => {
