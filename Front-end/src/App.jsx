@@ -1,6 +1,6 @@
-// App.jsx - Main container component
 import React, { useState } from 'react';
-import HeaderControls from './components/HeaderControls'; 
+import axios from 'axios';
+import HeaderControls from './components/HeaderControls';
 import CodeEditor from './components/CodeEditor';
 import AssemblyOutput from './components/AssemblyOutput';
 import { createCppLinter } from './services/LinterService';
@@ -11,60 +11,75 @@ int main() {
     return 0;
 }`;
 
-const DEFAULT_C_CODE = `#include <stdio.h>
-int main() {
-    printf("Hello World!\n");
+const DEFAULT_C_CODE = `int main() {
+    int numero1 = 5;
+    int numero2 = 7;
+    int suma;
+
+    suma = numero1 + numero2;
+
     return 0;
 }`;
 
-const API_URL = 'http://localhost:3001/api/compiler/compile';
+const API_URL = '/compilar';
 
 function App() {
   const [code, setCode] = useState(DEFAULT_C_CODE);
   const [language, setLanguage] = useState('c');
-  const [assembly, setAssembly] = useState('');
+  const [registers, setRegisters] = useState('');
   const [isCompiling, setIsCompiling] = useState(false);
   const [errors, setErrors] = useState([]);
   const [warnings, setWarnings] = useState([]);
+  const [asmFile, setAsmFile] = useState(null);
+  const [binFile, setBinFile] = useState(null); // Soporte .bin
 
-  const handleLanguageChange = (e) => { 
+  const handleLanguageChange = (e) => {
     const newLanguage = e.target.value;
     setLanguage(newLanguage);
     setCode(newLanguage === 'c' ? DEFAULT_C_CODE : DEFAULT_CPP_CODE);
     setErrors([]);
     setWarnings([]);
-    setAssembly('');
+    setRegisters('');
+    setAsmFile(null);
+    setBinFile(null);
   };
 
   const handleCompilation = async () => {
     if (code.trim() === '') {
-      setErrors([{ line: 0, column: 0, message: 'Please enter your code' }]);
+      setErrors([{ line: 0, column: 0, message: 'Por favor, ingrese su código.' }]);
       return;
     }
+
     setIsCompiling(true);
     setErrors([]);
     setWarnings([]);
-    setAssembly('');
+    setRegisters('');
+    setAsmFile(null);
+    setBinFile(null);
+
     try {
-      const response = await fetch(API_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ code, language }),
-      });
-      const result = await response.json();
-      if (!result.success) {
-        setErrors(result.errors || []);
-        setWarnings(result.warnings || []);
-      } else {
-        setAssembly(result.assemblyCode);
-        setWarnings(result.warnings || []);
+      const response = await axios.post(API_URL, { codigo: code });
+      const result = response.data;
+
+      if (result.error) {
+        setErrors([{ line: 0, column: 0, message: result.error }]);
+        return;
       }
+
+      setRegisters(result.registros_hex || '');
+      setAsmFile(result.archivo_asm || null);
+      setBinFile(result.archivo_bin || null); // Guardar .bin
+      setWarnings([]);
+
     } catch (err) {
-      setErrors([{ 
-        line: 0, 
-        column: 0, 
-        message: `Error connecting to compiler service: ${err.message}` 
+      setErrors([{
+        line: 0,
+        column: 0,
+        message: err.response?.data?.error || `Error al conectar con el compilador: ${err.message}`
       }]);
+      setRegisters('');
+      setAsmFile(null);
+      setBinFile(null);
     } finally {
       setIsCompiling(false);
     }
@@ -72,28 +87,29 @@ function App() {
 
   return (
     <div className="min-h-screen bg-blue-100 p-6">
-      {/* Header independiente sin contenedor ancho */}
-      <HeaderControls
-        language={language}
-        onLanguageChange={handleLanguageChange}
-        onCompile={handleCompilation}
-        isCompiling={isCompiling}
-      />
-
-      {/* Contenedor del contenido principal */}
       <div className="max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        <HeaderControls
+          language={language}
+          onLanguageChange={handleLanguageChange}
+          onCompile={handleCompilation}
+          isCompiling={isCompiling}
+        />
+
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <CodeEditor
             code={code}
             setCode={setCode}
             language={language}
             linter={createCppLinter}
           />
+
           <AssemblyOutput
-            assembly={assembly}
+            registers={registers}
             errors={errors}
             warnings={warnings}
             isCompiling={isCompiling}
+            asmFile={asmFile}
+            binFile={binFile} // Pasar a Simulación
           />
         </div>
       </div>
