@@ -13,7 +13,7 @@ function ErrorDisplay({ errors, warnings }) {
           <ul className="list-disc pl-5 space-y-1">
             {errors.map((error, index) => (
               <li key={`error-${index}`} className="text-sm">
-                {error.line > 0 ? `Line ${error.line}: ${error.message}` : error.message}
+                {error.message}
               </li>
             ))}
           </ul>
