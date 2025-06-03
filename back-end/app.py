@@ -5,6 +5,7 @@ import os
 import uuid
 import json
 from threading import Timer
+from werkzeug.security import check_password_hash 
 
 app = Flask(__name__, static_folder="../frontend/dist", static_url_path="")
 CORS(app)
@@ -45,8 +46,9 @@ def login():
         return jsonify({"success": False, "error": "No se pudo leer db.json"}), 500
 
     for user in users:
-        if user['email'] == email and user['password'] == password:
-            return jsonify({"success": True, "user": user})
+        # Verificación usando hash seguro
+        if user['email'] == email and check_password_hash(user['password'], password):
+            return jsonify({"success": True, "user": {"email": user["email"]}})
 
     return jsonify({"success": False, "error": "Credenciales incorrectas"}), 401
 
@@ -82,7 +84,6 @@ def compilar():
             check=True
         )
 
-        # Convertir a binario puro (.bin)
         subprocess.run(
             ["riscv32-unknown-elf-objcopy", "-O", "binary", elf_filename, bin_filename],
             check=True
