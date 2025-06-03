@@ -1,33 +1,28 @@
 // Importa la librería axios, que permite hacer peticiones HTTP fácilmente
 import axios from 'axios';
 
-// Se define la URL base de la API que devuelve la lista de usuarios
 
-const API_URL = "http://localhost:4000/users";
+//const API_URL = "https://tu-ngrok-id.ngrok.io/api";
 
-// Exporta una función loginUser que recibe email y contraseña
+const API_URL = "http://127.0.0.1:5000/api";
+
+// Función para iniciar sesión
 export const loginUser = async (email, password) => {
   try {
-    // Hace una petición para obtener todos los usuarios
-    const response = await axios.get(API_URL);
+    const response = await axios.post(`${API_URL}/login`, {
+      email,
+      password
+    });
 
-    // Busca dentro del array de usuarios si hay uno que coincida con el email y contraseña dados
-    const user = response.data.find(u => u.email === email && u.password === password);
-
-    // Si encontró un usuario con esas credenciales
-    if (user) {
-      // Guarda una marca en localStorage para indicar que el usuario está autenticado
+    if (response.data.success) {
+      // Guarda la sesión en localStorage
       localStorage.setItem('isLogged', 'true');
-
-      // Devuelve el objeto del usuario encontrado
-      return user;
+      localStorage.setItem('user', JSON.stringify(response.data.user));
+      return response.data.user;
     } else {
-      // Si no se encuentra ningún usuario con esas credenciales, lanza un error 
-      throw new Error('Credenciales incorrectas');
+      throw new Error(response.data.error || 'Credenciales incorrectas');
     }
-
   } catch (error) {
-    // Si hubo un error en la petición HTTP o cualquier otro fallo, lanza un error genérico
-    throw new Error('Error en el servidor o credenciales incorrectas');
+    throw new Error('Error al conectar con el servidor');
   }
 };
